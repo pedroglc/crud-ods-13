@@ -1,0 +1,133 @@
+<section class="main-section" data-js-tabMenu-content>
+            <article class="article-titles">
+                <h1>Usuários</h1>
+                <input type="text" class="txt-pesquisa" placeholder="Pesquise em Usuários">
+            </article>
+            <article class="box-btns-crud">
+                <button class="crud-btn-criar" data-js-btnTabFormsTables>Criar Novo</button>
+            </article>
+            <form method="POST" action="" class="box-form-crud" data-js-frmTabFormsTables>
+                <h1>Cadastrar Usuários</h1>
+                <input type="text" placeholder="Nome" class="txtNomeUsuario"name="nome">
+                <input type="text" placeholder="Sobrenome" class="txtSobreNomeUsuario"name="sobrenome">
+                <input type="number" placeholder="CPF" class="txtCpfUsuario"name="cpf">
+                <input type="text" placeholder="E-Mail" class="txtEmailUsuario"name="email">
+                <input type="text" placeholder="Rua" class="txtRuaUsuario"name="rua">
+                <input type="number" placeholder="Nº"name="numero">
+                <input type="text" placeholder="Bairro" class="txtBairroUsuario"name="bairro">
+                <input type="number" placeholder="CEP" class="txtCepUsuario"name="cep">
+                <input type="text" placeholder="Cidade" class="txtCidadeUsuario"name="cidade">
+                <input type="number" placeholder="telefone" class="txtCidadeUsuario"name="telefone">
+                <select type="text" placeholder="UF" class="txtUfUsuario"name="uf">
+                    <option value="sp">SP</option>
+                    <option value="mg">MG</option>
+                    <option value="pr">PR</option>
+                    <option value="rj">RJ</option>
+                    <option value="sc">SC</option>
+                </select>
+                <button class="btnLimparCadastro">Limpar</button>
+                <a href="index.php?CadastrarUsuario">
+                    <input type="submit" value="Cadastrar" class="btnSubmitCadastrar" name="CadastrarUsuario">
+                </a>
+                <?php  
+                require_once('01-conexao.php');               
+                require_once('dados_consumidor.php');
+                    if(isset($_POST['CadastrarUsuario'])){                        
+                        inserir_dadosUsuario(); 
+                    }                   
+                ?>
+            </form>
+            <section class="box-table" data-js-tableTabFormsTables>
+                <div class="row-header-table">
+                    <div class="col-header-table">Ações</div>
+                    <div class="col-header-table">
+                        <a href="?sort=desc">Id <i class="fa-solid fa-chevron-up"></i></a></div> <!--link ordenação-->
+                    <div class="col-header-table">Nome</div>
+                    <div class="col-header-table">Sobrenome</div>
+                    <div class="col-header-table">CPF</div>
+                    <div class="col-header-table">E-Mail</div>
+                    <div class="col-header-table">Telefone</div>
+                    <div class="col-header-table">Rua</div>
+                    <div class="col-header-table">Nº</div>
+                    <div class="col-header-table">Bairro</div>
+                    <div class="col-header-table">CEP</div>
+                    <div class="col-header-table">Cidade</div>
+                    <div class="col-header-table">UF</div>
+                </div>
+            <?php
+                // Função Quicksort para ordenar a tabela em ordem decrescente pelo campo 'idConsumidor'
+                function quicksort(&$array, $start, $end){
+                    if ($start < $end) { //1
+                        $pivotIndex = partition($array, $start, $end); //10n+6
+                        quicksort($array, $start, $pivotIndex - 1);//
+                        quicksort($array, $pivotIndex + 1, $end);
+                    }
+                }
+
+                // Função auxiliar para a partição do Quicksort /*2+4n+6n+3 = 10n+5*/
+                function partition(&$array, $start, $end){
+                    $pivot = $array[$end]['idConsumidor'];//2
+                    $pivotIndex = $start;
+
+                    for ($i = $start; $i < $end; $i++) { //n*4
+                        if ($array[$i]['idConsumidor'] > $pivot) {//n * 6
+                            swap($array, $i, $pivotIndex);
+                            $pivotIndex++;
+                        }
+                    }
+
+                    swap($array, $pivotIndex, $end); //3
+
+                    return $pivotIndex;
+                }
+
+                // Função auxiliar para trocar elementos no array
+                function swap(&$array, $index1, $index2){ /* 3 */
+                    $temp = $array[$index1];
+                    $array[$index1] = $array[$index2];
+                    $array[$index2] = $temp;
+                }
+
+                    
+                // Chamada da função listar_consumidor() para obter os registros da tabela
+                listar_consumidor();
+
+                // Verificar se o link foi clicado
+                if (isset($_GET['sort']) && $_GET['sort'] == 'desc') {
+                    // Ordenar a tabela em ordem decrescente pelo campo 'idConsumidor'
+                    quicksort($registrosC, 0, count($registrosC) - 1);
+                }
+
+            ?>
+            <?php
+            if (isset($registrosC) && !empty($registrosC)) {
+                foreach ($registrosC as $registro) :
+            ?>
+            <div class="row-table">
+                <div class="col-table actions">
+                    <a href="update_usuario.php?editarUsuario=<?= $registro['idConsumidor'] ?>">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <a href="index.php?excluirConsumidor=<?= $registro['idConsumidor'] ?>">
+                        <i class="fa-solid fa-trash" name="excluirConsumidor"></i>
+                    </a>
+                </div>
+                <div class="col-table"><?php echo $registro['idConsumidor'] ?></div>
+                <div class="col-table"><?php echo $registro['nomeConsumidor'] ?></div>
+                <div class="col-table"><?php echo $registro['sobrenome'] ?></div>
+                <div class="col-table"><?php echo $registro['cpf'] ?></div>
+                <div class="col-table"><?php echo $registro['email'] ?></div>
+                <div class="col-table"><?php echo $registro['telefone'] ?></div>
+                <div class="col-table"><?php echo $registro['rua'] ?></div>
+                <div class="col-table"><?php echo $registro['numero'] ?></div>
+                <div class="col-table"><?php echo $registro['bairro'] ?></div>
+                <div class="col-table"><?php echo $registro['cep'] ?></div>
+                <div class="col-table"><?php echo $registro['cidade'] ?></div>
+                <div class="col-table"><?php echo $registro['uf'] ?></div>
+            </div>
+            <?php
+                endforeach;
+            }
+            ?>          
+            </section>
+        </section>
